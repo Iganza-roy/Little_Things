@@ -278,8 +278,16 @@ function App() {
   const [formMemory, setFormMemory] = useState(null)
   const [formOpen, setFormOpen] = useState(false)
   const [detailMemory, setDetailMemory] = useState(null)
-  const [featuredId, setFeaturedId] = useState(null)
+  const [featuredId] = useState(() => {
+    const initial = loadMemories()
+    return initial.length ? initial[Math.floor(Math.random() * initial.length)].id : null
+  })
   const [rediscovering, setRediscovering] = useState(false)
+  const [currentDate] = useState(() => new Intl.DateTimeFormat('en-US', {
+    month: 'short',
+    day: '2-digit',
+    year: 'numeric',
+  }).format(new Date()).toUpperCase())
   const previousMemoryId = useRef(null)
 
   useEffect(() => {
@@ -289,12 +297,6 @@ function App() {
       // The app remains usable even if storage is restricted.
     }
   }, [memories])
-
-  useEffect(() => {
-    if (memories.length && (featuredId === null || !memories.some((item) => item.id === featuredId))) {
-      setFeaturedId(memories[Math.floor(Math.random() * memories.length)].id)
-    }
-  }, [memories, featuredId])
 
   const featured = memories.find((item) => item.id === featuredId) ?? memories[0]
 
@@ -334,12 +336,6 @@ function App() {
       setRediscovering(false)
     }, 650)
   }
-
-  const currentDate = new Intl.DateTimeFormat('en-US', {
-    month: 'short',
-    day: '2-digit',
-    year: 'numeric',
-  }).format(new Date()).toUpperCase()
 
   return (
     <div className="app-shell">
